@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=980">
+  <title>Funferp MVP Demo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Funferp ERP - Modo Demo</h1>
+  <p class="muted">💡 Este é um ambiente de demonstração. Os dados são temporários e serão apagados ao atualizar a página (F5).</p>
+</header>
+
+<nav>
+  <button data-tab="home">🏠 Início</button>
+  <button data-tab="cadastros">📦 Cadastros</button>
+  <button data-tab="estoque">📊 Estoque</button>
+  <button data-tab="financeiro">💰 Financeiro</button>
+  <button data-tab="relatorios">📈 Relatórios</button>
+</nav>
+
+<main id="appArea">
+
+  
+  <section id="home" class="tab">
+    <h2>Bem-vindo(a) ao Demo!</h2>
+    <p>Neste modo, você pode testar todas as funcionalidades: cadastrar, vender, pagar, gerar relatórios, etc. Os dados não são salvos em banco.</p>
+    <ul>
+      <li>📝 Cadastre fornecedores, contas e produtos</li>
+      <li>💸 Registre pagamentos e vendas</li>
+      <li>📑 Gere relatórios completos</li>
+      <li>♻️ Ao atualizar a página, os dados voltam ao estado inicial</li>
+    </ul>
+  </section>
+
+  
+  <section id="cadastros" class="tab hide">
+    <h2>Cadastros</h2>
+
+    <div class="card">
+      <h3>Insumos</h3>
+      <label>Nome: <input id="iNome" placeholder="Ex: Queijo Mussarela"></label>
+      <label>Unidade: 
+        <select id="iUni">
+          <option value="">Selecione...</option>
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="un">un</option>
+          <option value="ml">ml</option>
+          <option value="l">l</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="iVend"> Vendível</label>
+      <button id="btnAddInsumo">Salvar</button>
+      <button id="btnListInsumo">Listar</button>
+      <div id="msgInsumo" class="msg"></div>
+      <table id="tblInsumos">
+        <thead><tr><th>ID</th><th>Nome</th><th>Unidade</th><th>Vendível</th></tr></thead>
+        <tbody><tr><td colspan="4" class="muted">(vazio)</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Produtos</h3>
+      <label>Nome: <input id="pNome" placeholder="Ex: X-Burger"></label>
+      <label>É preparado? 
+        <select id="pPrep">
+          <option value="">Selecione...</option>
+          <option value="true">Sim</option>
+          <option value="false">Não</option>
+        </select>
+      </label>
+      <div id="inline-ficha" class="hide">
+        <p class="muted">Após salvar, defina a ficha técnica abaixo.</p>
+      </div>
+      <button id="btnAddProd">Salvar</button>
+      <button id="btnListProd">Listar</button>
+      <div id="msgProd" class="msg"></div>
+      <table id="tblProdutos">
+        <thead><tr><th>ID</th><th>Nome</th><th>Preparado</th></tr></thead>
+        <tbody><tr><td colspan="3" class="muted">(vazio)</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Ficha Técnica</h3>
+      <label>Produto: 
+        <select id="fpProd"></select>
+      </label>
+      <button id="fpBtnVer">Ver Ficha</button>
+      <table id="fpTbl">
+        <thead><tr><th>ID</th><th>Insumo</th><th>Qtd</th><th>Unidade</th></tr></thead>
+        <tbody><tr><td colspan="4" class="muted">(vazio)</td></tr></tbody>
+      </table>
+
+      <h4>Adicionar Linha</h4>
+      <label>Insumo: <select class="fpLinhaIns"></select></label>
+      <label>Qtd: <input class="fpLinhaQtd" type="number" step="0.01"></label>
+      <label>Unidade: 
+        <select class="fpLinhaUn">
+          <option value="">Selecione...</option>
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="un">un</option>
+          <option value="ml">ml</option>
+          <option value="l">l</option>
+        </select>
+      </label>
+      <button id="fpBtnAddLinha">+ Adicionar linha</button>
+      <table id="fpTblLinhas">
+        <thead><tr><th>#</th><th>Insumo</th><th>Qtd</th><th>Un</th><th></th></tr></thead>
+        <tbody><tr><td colspan="5" class="muted">(vazio)</td></tr></tbody>
+      </table>
+      <button id="fpBtnSalvar">Salvar Ficha</button>
+      <div id="fpMsg" class="msg"></div>
+    </div>
+  </section>
+
+  
+  <section id="estoque" class="tab hide">
+    <h2>Estoque</h2>
+
+    <div class="card">
+      <h3>Entrada de Estoque</h3>
+      <label>Insumo: <select id="eIns"></select></label>
+      <label>Qtd: <input id="eQtd" type="number" step="0.01"></label>
+      <label>Custo Total: <input id="eCusto" type="number" step="0.01"></label>
+      <button id="btnEntrada">Registrar Entrada</button>
+      <div id="msgEnt" class="msg"></div>
+    </div>
+
+    <div class="card">
+      <h3>Ajuste de Estoque</h3>
+      <label>Insumo: <select id="aIns"></select></label>
+      <label>Qtd (ex: -1): <input id="aQtd" type="number" step="0.01"></label>
+      <label>Motivo: <input id="aMot" placeholder="Ex: quebra"></label>
+      <label>Custo Unitário (opcional): <input id="aCusto" type="number" step="0.01"></label>
+      <button id="btnAjuste">Aplicar Ajuste</button>
+      <div id="msgAj" class="msg"></div>
+    </div>
+    <div class="card">
+      <h3>Conversões</h3>
+      <label>Insumo: <select id="convIns"></select></label>
+      <label>De: <input id="convFrom" placeholder="Ex: kg"></label>
+      <label>Para: <input id="convTo" placeholder="Ex: g"></label>
+      <label>Fator: <input id="convFactor" type="number" step="0.0001" placeholder="Ex: 1000"></label>
+      <button id="btnConvAdd">Adicionar Conversão</button>
+      <button id="btnConvList">Listar</button>
+      <div id="msgConv" class="msg"></div>
+      <table id="tblConv">
+        <thead><tr><th>De</th><th>Para</th><th>Fator</th></tr></thead>
+        <tbody><tr><td colspan="3" class="muted">(vazio)</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Saldos</h3>
+      <button id="btnSaldos">Atualizar Saldos</button>
+      <table id="tblSaldos">
+        <thead><tr><th>Insumo</th><th>Unidade</th><th>Saldo</th><th>Custo Médio</th></tr></thead>
+        <tbody><tr><td colspan="4" class="muted">(vazio)</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Exportar Estoque CSV (BR)</h3>
+      <button id="btnEstoqueMediaCSV">Exportar</button>
+    </div>
+
+  </section>
+
+  
+  <section id="financeiro" class="tab hide">
+    <h2>Financeiro</h2>
+
+    <div class="card">
+      <h3>Fornecedores</h3>
+      <label>Nome: <input id="fForNome" placeholder="Ex: Supermercado Central"></label>
+      <label>Documento: <input id="fForDoc" placeholder="CNPJ/CPF"></label>
+      <button id="btnAddForn">Salvar</button>
+      <button id="btnListForn">Listar</button>
+      <div id="msgForn" class="msg"></div>
+      <table id="tblForns">
+        <thead><tr><th>ID</th><th>Nome</th><th>Documento</th></tr></thead>
+        <tbody><tr><td colspan="3" class="muted">(vazio)</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Tipos de Despesa</h3>
+      <label>Nome: <input id="fTipoNome" placeholder="Ex: Energia elétrica"></label>
+      <button id="btnAddTipo">Salvar</button>
+      <button id="btnListTipo">Listar</button>
+      <div id="msgTipo" class="msg"></div>
+      <table id="tblTipos">
+        <thead><tr><th>ID</th><th>Nome</th></tr></thead>
+        <tbody><tr><td colspan="2" class="muted">(vazio)</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Contas</h3>
+      <label>Nome: <input id="fContaNome" placeholder="Ex: Caixa Principal"></label>
+      <label>Tipo: 
+        <select id="fContaTipo">
+          <option value="caixa">Caixa</option>
+          <option value="banco">Banco</option>
+          <option value="cartão">Cartão</option>
+        </select>
+      </label>
+      <button id="btnAddConta">Salvar</button>
+      <button id="btnListConta">Listar</button>
+      <div id="msgConta" class="msg"></div>
+      <table id="tblContas">
+        <thead><tr><th>ID</th><th>Nome</th><th>Tipo</th></tr></thead>
+        <tbody><tr><td colspan="3" class="muted">(vazio)</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Pagamentos</h3>
+      <label>Fornecedor: <select id="pForn"></select></label>
+      <label>Tipo: <select id="pTipo"></select></label>
+      <label>Conta: <select id="pConta"></select></label>
+      <label>Valor: <input id="pValor" type="number" step="0.01"></label>
+      <label>Data: <input id="pData" placeholder="DD/MM/AAAA"></label>
+      <label>Observação: <input id="pObs"></label>
+      <button id="btnAddPgto">Salvar</button>
+      <button id="btnListPgto">Listar</button>
+      <div id="msgPgto" class="msg"></div>
+      <table id="tblPgto">
+        <thead><tr><th>ID</th><th>Data</th><th>Fornecedor</th><th>Tipo</th><th>Conta</th><th>Valor</th><th>Obs</th></tr></thead>
+        <tbody><tr><td colspan="7" class="muted">(vazio)</td></tr></tbody>
+      </table>
+      <button id="btnPagamentosCSV">Exportar CSV-BR</button>
+    </div>
+  </section>
+
+  
+  <section id="relatorios" class="tab hide">
+    <h2>Relatórios</h2>
+
+    <div class="card">
+      <h3>Relatório de Estoque</h3>
+      <button id="btnRelEst">Gerar</button>
+      <table id="tblRelEst">
+        <thead><tr><th>Insumo</th><th>Unidade</th><th>Saldo</th><th>Custo Médio</th></tr></thead>
+        <tbody><tr><td colspan="4" class="muted">(vazio)</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Relatório de Vendas</h3>
+      <label>Data inicial: <input id="rvIni" placeholder="DD/MM/AAAA"></label>
+      <label>Data final: <input id="rvFim" placeholder="DD/MM/AAAA"></label>
+      <button id="btnRelV">Gerar</button>
+      <table id="tblVendas">
+        <thead>
+          <tr>
+            <th>ID</th><th>Data</th><th>Produto</th><th>Preço</th>
+            <th>Qtd</th><th>Tipo</th><th>Comentário</th><th>Pgto</th>
+            <th>Cancelada</th><th>Consumo</th><th></th>
+          </tr>
+        </thead>
+        <tbody><tr><td colspan="11" class="muted">(vazio)</td></tr></tbody>
+      </table>
+      <button id="btnVendasCSVBR">Exportar CSV-BR</button>
+    </div>
+
+    <div class="card">
+      <h3>Relatório de Movimentações</h3>
+      <label>Data inicial: <input id="rmi" placeholder="DD/MM/AAAA"></label>
+      <label>Data final: <input id="rmf" placeholder="DD/MM/AAAA"></label>
+      <button id="btnRelMov">Gerar</button>
+      <table id="tblRelMov">
+        <thead>
+          <tr>
+            <th>ID</th><th>Data</th><th>Insumo</th><th>Qtd</th>
+            <th>Un</th><th>Custo</th><th>Origem</th><th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody><tr><td colspan="8" class="muted">(vazio)</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>© 2025 Funferp Demo | Dados não persistentes (modo de demonstração)</p>
+</footer>
+
+<script>
+"use strict";
+
+
+const ROLE = "admin"; // acesso total
+const BACK = null; // sem backend real
+
+// headers e utilitários
+function authHeaders(){ return {}; }
+function setMsg(el, txt, ok){ el.textContent=txt; el.className=ok?"msg ok":"msg err"; }
+function $(sel){ return document.querySelector(sel); }
+function $all(sel){ return document.querySelectorAll(sel); }
+
+// conversões e formatações
+function isoToBr(iso){ if(!iso) return ""; const [y,m,d]=iso.split("-"); return `${d}/${m}/${y}`; }
+function brToIso(br){ const [d,m,y]=br.split("/"); return `${y}-${m}-${d}`; }
+const brMoney=new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+const brQty2=new Intl.NumberFormat("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+const brQty3=new Intl.NumberFormat("pt-BR",{minimumFractionDigits:3,maximumFractionDigits:3});
+
+const DB = {
+  seq: { insumo:1, produto:1, mov:1 },
+  insumos: [],                 // {id,nome,unidade,vendivel}
+  produtos: [],                // {id,nome,preparado}
+  ficha: {},                   // { [produto_id]: [ {insumo_id,quantidade,unidade} ] }
+  estoque: {},                 // { [insumo_id]: { saldo:number, custoMedio:number } }
+  _convs: {},                  // { [insumo_id]: [ {de_unidade, para_unidade, fator} ] }
+  movs: []                     // {id,dataISO,insumo_id,insumo_nome,quantidade,unidade,custo_total,origem,tipo}
+};
+
+function todayISO(){ return new Date().toISOString(); }
+function ensureEstoque(id){ return (DB.estoque[id] ||= { saldo:0, custoMedio:0 }); }
+function findInsumo(id){ return DB.insumos.find(i => i.id === id) || null; }
+function addMov(m){
+  m.id = DB.seq.mov++;
+  DB.movs.push(m);
+}
+
+
+(function seedDemoMinimo(){
+  // Descomente para popular rapidamente
+  /*
+  addInsumo("Carne Bovina", "kg", false);
+  addInsumo("Refrigerante Lata", "un", true);
+  addInsumo("Arroz", "kg", false);
+  addProduto("Prato Executivo", true);
+  */
+})();
+
+
+function addInsumo(nome, unidade, vendivel=false){
+  const id = DB.seq.insumo++;
+  DB.insumos.push({ id, nome, unidade, vendivel: !!vendivel });
+  refreshInsumoSelects();
+  return id;
+}
+function addProduto(nome, preparado=false){
+  const id = DB.seq.produto++;
+  DB.produtos.push({ id, nome, preparado: !!preparado });
+  return id;
+}
+
+function refreshInsumoSelects(){
+  // Conversões
+  const opts = [`<option value="">Selecione…</option>`]
+    .concat(DB.insumos.map(i => `<option value="${i.id}">${i.id} - ${i.nome} (${i.unidade})</option>`));
+  const convIns = $("#convIns");
+  if (convIns) convIns.innerHTML = opts.join("");
+}
+
+
+function listConversoes(){
+  const insumo_id = parseInt($("#convIns")?.value || "0", 10);
+  const tbody = $("#tblConv tbody");
+  if (!insumo_id) {
+    tbody.innerHTML = `<tr><td colspan="3" class="muted">Selecione um insumo.</td></tr>`;
+    return;
+  }
+  const arr = (DB._convs[insumo_id] || []);
+  if (!arr.length) {
+    tbody.innerHTML = `<tr><td colspan="3" class="muted">(vazio)</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = arr.map(c =>
+    `<tr><td>${c.de_unidade}</td><td>${c.para_unidade}</td><td>${brQty3.format(+c.fator)}</td></tr>`
+  ).join("");
+}
+
+function saveConversao(){
+  const insumo_id = parseInt($("#convIns")?.value || "0", 10);
+  const de_unidade = ($("#convFrom")?.value || "").trim();
+  const para_unidade = ($("#convTo")?.value || "").trim();
+  const fator = parseFloat($("#convFactor")?.value || "0");
+  const msg = $("#msgConv");
+
+  if (!insumo_id || !de_unidade || !para_unidade || !(fator > 0)) {
+    setMsg(msg, "Preencha insumo, de, para e fator > 0.", false);
+    return;
+  }
+
+  const arr = (DB._convs[insumo_id] ||= []);
+  const ix = arr.findIndex(c => c.de_unidade === de_unidade && c.para_unidade === para_unidade);
+  if (ix >= 0) arr[ix].fator = +fator; else arr.push({ de_unidade, para_unidade, fator:+fator });
+
+  setMsg(msg, "Conversão salva!", true);
+  $("#convFactor").value = "";
+  listConversoes();
+}
+
+// Bind dos botões de conversão
+$("#btnConvAdd")?.addEventListener("click", saveConversao);
+$("#btnConvList")?.addEventListener("click", listConversoes);
+
+
+function saldosMedia(){
+  
+  return DB.insumos.map(ins => {
+    const st = DB.estoque[ins.id] || { saldo:0, custoMedio:0 };
+    return {
+      insumo_id: ins.id,
+      insumo_nome: ins.nome,
+      unidade: ins.unidade,
+      saldo: +st.saldo,
+      custo_medio: +st.custoMedio
+    };
+  });
+}
+
+// Render + botão "Atualizar"
+function loadSaldos(){
+  const data = saldosMedia();
+  const tbody = $("#tblSaldos tbody");
+  if (!tbody) return;
+
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="4" class="muted">(vazio)</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(x => `
+    <tr>
+      <td>${x.insumo_nome}</td>
+      <td>${x.unidade}</td>
+      <td>${brQty3.format(+x.saldo)}</td>
+      <td>${brMoney.format(+(x.custo_medio||0))}</td>
+    </tr>
+  `).join("");
+}
+
+$("#btnSaldos")?.addEventListener("click", loadSaldos);
+
+
+
+function entradaMedia({ insumo_id, quantidade, custo_total }){
+  const e = ensureEstoque(insumo_id);
+  const qtd = +quantidade;
+  const somaAnt = e.saldo * e.custoMedio;
+  e.saldo += qtd;
+  e.custoMedio = e.saldo > 0 ? (somaAnt + (+custo_total)) / e.saldo : 0;
+
+  const ins = findInsumo(insumo_id);
+  addMov({
+    dataISO: todayISO(),
+    insumo_id,
+    insumo_nome: ins?.nome || "",
+    quantidade: +qtd,
+    unidade: ins?.unidade || "",
+    custo_total: +custo_total,
+    origem: "entrada",
+    tipo: "entrada-media"
+  });
+}
+
+function ajusteMedia({ insumo_id, quantidade, motivo, custo_unitario }){
+  const e = ensureEstoque(insumo_id);
+  const qtd = +quantidade;
+  if (typeof custo_unitario === "number" && !Number.isNaN(custo_unitario)) {
+    e.custoMedio = +custo_unitario;
+  }
+  e.saldo += qtd;
+
+  const ins = findInsumo(insumo_id);
+  addMov({
+    dataISO: todayISO(),
+    insumo_id,
+    insumo_nome: ins?.nome || "",
+    quantidade: +qtd,
+    unidade: ins?.unidade || "",
+    custo_total: 0,
+    origem: motivo || "ajuste",
+    tipo: "ajuste-media"
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  refreshInsumoSelects(); // popula selects de insumos (conversões)
+  // se houver dados seed, já renderiza
+  listConversoes();
+  loadSaldos();
+});
+
+
+// Garante campos extras do DB (caso não existam ainda)
+DB.vendas       ||= [];   // {venda_id,data,produto_nome,preco_venda,quantidade,tipo,comentario,forma_pagamento,cancelada,consumos:[...]}
+DB.seq.venda    ||= 1;
+DB.formas       ||= ["dinheiro","pix","debito","credito","voucher","outro"];
+
+DB.fornecedores ||= [];  // {id,nome,documento}
+DB.tipos        ||= [];  // {id,nome}
+DB.contas       ||= [];  // {id,nome,tipo}
+DB.pagamentos   ||= [];  // {id,dataISO,fornecedor_id,tipo_id,conta_id,valor,observacao}
+DB.seq.forn     ||= 1;
+DB.seq.tipo     ||= 1;
+DB.seq.conta    ||= 1;
+DB.seq.pgto     ||= 1;
+
+// ----------------------- Relatórios locais (consulta de dados) -----------------------
+function relVendasLocal({ start, end } = {}){
+  const ini = start ? new Date(start+"T00:00:00") : null;
+  const fim = end   ? new Date(end+"T23:59:59")  : null;
+  const out = [];
+  for (const v of DB.vendas) {
+    const d = new Date(v.data);
+    if (ini && d < ini) continue;
+    if (fim && d > fim) continue;
+
+    if (!v.consumos || !v.consumos.length) {
+      out.push({
+        venda_id: v.venda_id, data: v.data, produto_nome: v.produto_nome,
+        preco_venda: v.preco_venda, quantidade: v.quantidade, tipo: v.tipo,
+        comentario: v.comentario, forma_pagamento: v.forma_pagamento, cancelada: v.cancelada,
+        insumo_nome: "", consumo_base: "", unidade_base: ""
+      });
+    } else {
+      for (const c of v.consumos) {
+        out.push({
+          venda_id: v.venda_id, data: v.data, produto_nome: v.produto_nome,
+          preco_venda: v.preco_venda, quantidade: v.quantidade, tipo: v.tipo,
+          comentario: v.comentario, forma_pagamento: v.forma_pagamento, cancelada: v.cancelada,
+          insumo_nome: c.insumo_nome, consumo_base: c.consumo_base, unidade_base: c.unidade_base
+        });
+      }
+    }
+  }
+  return out;
+}
+
+function listPgtosLocal({ start, end } = {}){
+  const ini = start ? new Date(start+"T00:00:00") : null;
+  const fim = end   ? new Date(end+"T23:59:59")  : null;
+  return DB.pagamentos.filter(p=>{
+    const d = new Date(p.dataISO);
+    return (!ini || d>=ini) && (!fim || d<=fim);
+  }).map(p=>({
+    id: p.id,
+    data: p.dataISO,
+    fornecedor_nome: (DB.fornecedores.find(f=>f.id===p.fornecedor_id)?.nome) || "",
+    tipo_nome: (DB.tipos.find(t=>t.id===p.tipo_id)?.nome) || "",
+    conta_nome: (DB.contas.find(c=>c.id===p.conta_id)?.nome) || "",
+    valor: p.valor,
+    observacao: p.observacao || ""
+  }));
+}
+
+function relPgtosLocal({ start, end } = {}){
+  const base = listPgtosLocal({ start, end });
+  return base.map(p=>({
+    id: p.id,
+    data: p.data,
+    fornecedor: p.fornecedor_nome,
+    tipo: p.tipo_nome,
+    conta: p.conta_nome,
+    valor: p.valor,
+    observacao: p.observacao
+  }));
+}
+
+// ----------------------- CSV helpers -----------------------
+function csvEscapeBR(v){
+  const s = String(v ?? "");
+  return /[\";\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+}
+function downloadCSV(filename, csvText){
+  const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// ----------------------- CSV: Estoque (custo médio – BR) -----------------------
+async function exportEstoqueBR(){
+  const data = saldosMedia() || [];
+  const headers = ["insumo_id","insumo_nome","unidade","saldo","custo_medio"];
+  const sep = ";";
+  const rows = data.map(x => [
+    x.insumo_id ?? "",
+    (x.insumo_nome ?? ""),
+    x.unidade ?? "",
+    x.saldo ?? 0,
+    x.custo_medio ?? 0
+  ]);
+
+  const csv = [
+    headers.join(sep),
+    ...rows.map(rw => rw.map(csvEscapeBR).join(sep))
+  ].join("\n");
+
+  downloadCSV("estoque_custo_medio.csv", csv);
+}
+document.getElementById("btnEstoqueMediaCSV")?.addEventListener("click", exportEstoqueBR);
+document.getElementById("btnEstoqueMediaCSV2")?.addEventListener("click", exportEstoqueBR);
+
+// ----------------------- CSV: Vendas (BR) -----------------------
+async function exportVendasBR(){
+  // Captura período de qualquer uma das telas (relatórios ou vendas)
+  const viBR = (document.getElementById("rvi")?.value || document.getElementById("rvIni")?.value || "").trim();
+  const vfBR = (document.getElementById("rvf")?.value || document.getElementById("rvFim")?.value || "").trim();
+  const vi = brToIso(viBR);
+  const vf = brToIso(vfBR);
+
+  const data = relVendasLocal({ start: vi || undefined, end: vf || undefined }) || [];
+  const headers = ["id","data","produto","preco","quantidade","tipo","comentario","pagamento","cancelada","consumo_insumo","consumo_qtd","consumo_un"];
+  const sep = ";";
+
+  const rows = data.map(v => [
+    v.venda_id ?? "",
+    isoToBr((v.data||"").toString().slice(0,10)),
+    (v.produto_nome||""),
+    v.preco_venda ?? 0,
+    v.quantidade ?? 0,
+    v.tipo ?? "",
+    (v.comentario||""),
+    v.forma_pagamento ?? "",
+    v.cancelada ? "SIM" : "NÃO",
+    v.insumo_nome ?? "",
+    v.consumo_base ?? "",
+    v.unidade_base ?? ""
+  ]);
+
+  const csv = [
+    headers.join(sep),
+    ...rows.map(rw => rw.map(csvEscapeBR).join(sep))
+  ].join("\n");
+
+  downloadCSV("vendas.csv", csv);
+}
+document.getElementById("btnVendasCSVBR")?.addEventListener("click", exportVendasBR);
+
+// ----------------------- CSV: Pagamentos (BR) -----------------------
+async function exportPagamentosBR(){
+  const viBR = (document.getElementById("rpi")?.value || document.getElementById("rpIni")?.value || "").trim();
+  const vfBR = (document.getElementById("rpf")?.value || document.getElementById("rpFim")?.value || "").trim();
+  const vi = brToIso(viBR);
+  const vf = brToIso(vfBR);
+
+  const data = relPgtosLocal({ start: vi || undefined, end: vf || undefined }) || [];
+  const headers = ["id","data","fornecedor","tipo","conta","valor","observacao"];
+  const sep = ";";
+
+  const rows = data.map(p => [
+    p.id ?? "",
+    isoToBr((p.data||"").toString().slice(0,10)),
+    (p.fornecedor||""),
+    (p.tipo||""),
+    (p.conta||""),
+    p.valor ?? 0,
+    (p.observacao||"")
+  ]);
+
+  const csv = [
+    headers.join(sep),
+    ...rows.map(rw => rw.map(csvEscapeBR).join(sep))
+  ].join("\n");
+
+  downloadCSV("pagamentos.csv", csv);
+}
+document.getElementById("btnPagamentosCSV")?.addEventListener("click", exportPagamentosBR);
+document.getElementById("btnPagamentosCSV2")?.addEventListener("click", exportPagamentosBR);
+
+// ----------------------- Render rápido de tabelas de relatório (opcional) -----------------------
+document.getElementById("btnRelEst")?.addEventListener("click", loadSaldos);
+
+document.getElementById("btnRelV")?.addEventListener("click", () => {
+  const vi = brToIso((document.getElementById("rvi")?.value||"").trim());
+  const vf = brToIso((document.getElementById("rvf")?.value||"").trim());
+  const data = relVendasLocal({ start: vi || undefined, end: vf || undefined });
+  const tb = document.querySelector("#tblVendas tbody");
+  if (!tb) return;
+  tb.innerHTML = data.length
+    ? data.map(v=>`<tr>
+        <td>${v.venda_id}</td>
+        <td>${isoToBr((v.data||"").toString().slice(0,10))}</td>
+        <td>${(v.produto_nome||"")}</td>
+        <td>${brMoney.format(+v.preco_venda||0)}</td>
+        <td>${v.forma_pagamento||""}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="5" class="muted">(vazio)</td></tr>`;
+});
+
+document.getElementById("btnRelFinanceiro")?.addEventListener("click", () => {
+  const vi = brToIso((document.getElementById("rpi")?.value||"").trim());
+  const vf = brToIso((document.getElementById("rpf")?.value||"").trim());
+  const data = relPgtosLocal({ start: vi || undefined, end: vf || undefined });
+  const tb = document.querySelector("#tblRelPag tbody");
+  if (!tb) return;
+  tb.innerHTML = data.length
+    ? data.map(p=>`<tr>
+        <td>${p.id}</td>
+        <td>${isoToBr((p.data||"").toString().slice(0,10))}</td>
+        <td>${p.fornecedor||""}</td>
+        <td>${p.tipo||""}</td>
+        <td>${p.conta||""}</td>
+        <td>${brMoney.format(+p.valor||0)}</td>
+        <td>${p.observacao||""}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="7" class="muted">(vazio)</td></tr>`;
+});
+
+
+// Garantias de estrutura
+DB.fornecedores ||= []; DB.seq.forn  ||= 1;
+DB.tipos        ||= []; DB.seq.tipo  ||= 1;
+DB.contas       ||= []; DB.seq.conta ||= 1;
+DB.pagamentos   ||= []; DB.seq.pgto  ||= 1;
+
+// ---------- Helpers de tabela/select ----------
+async function finLoadForns(){
+  const data = DB.fornecedores || [];
+  const tb   = document.querySelector("#tblForns tbody");
+  if (tb) {
+    tb.innerHTML = data.length
+      ? data.map(f=>`<tr><td>${f.id}</td><td>${f.nome}</td><td>${f.documento||""}</td></tr>`).join("")
+      : `<tr><td colspan="3" class="muted">(vazio)</td></tr>`;
+  }
+  const sel = document.getElementById("pForn");
+  if (sel) {
+    sel.innerHTML = `<option value="">Selecione…</option>` + data.map(f=>`<option value="${f.id}">${f.id} - ${f.nome}</option>`).join("");
+  }
+}
+
+async function finLoadTipos(){
+  const data = DB.tipos || [];
+  const tb   = document.querySelector("#tblTipos tbody");
+  if (tb) {
+    tb.innerHTML = data.length
+      ? data.map(t=>`<tr><td>${t.id}</td><td>${t.nome}</td></tr>`).join("")
+      : `<tr><td colspan="2" class="muted">(vazio)</td></tr>`;
+  }
+  const sel = document.getElementById("pTipo");
+  if (sel) {
+    sel.innerHTML = `<option value="">Selecione…</option>` + data.map(t=>`<option value="${t.id}">${t.id} - ${t.nome}</option>`).join("");
+  }
+}
+
+async function finLoadContas(){
+  const data = DB.contas || [];
+  const tb   = document.querySelector("#tblContas tbody");
+  if (tb) {
+    tb.innerHTML = data.length
+      ? data.map(c=>`<tr><td>${c.id}</td><td>${c.nome}</td><td>${c.tipo}</td></tr>`).join("")
+      : `<tr><td colspan="3" class="muted">(vazio)</td></tr>`;
+  }
+  const sel = document.getElementById("pConta");
+  if (sel) {
+    sel.innerHTML = `<option value="">Selecione…</option>` + data.map(c=>`<option value="${c.id}">${c.id} - ${c.nome} (${c.tipo})</option>`).join("");
+  }
+}
+
+async function finPopulateSelectors(){
+  await Promise.all([finLoadForns(), finLoadTipos(), finLoadContas()]);
+}
+
+// ---------- Botões: cadastros financeiros ----------
+document.getElementById('btnAddForn')?.addEventListener('click', async () => {
+  const nome = (document.getElementById("fForNome")?.value || '').trim();
+  const documento = (document.getElementById("fForDoc")?.value || '').trim();
+  if (!nome) { setMsg(document.getElementById("msgForn"), "Informe o nome do fornecedor.", false); document.getElementById("fForNome")?.focus(); return; }
+  const id = DB.seq.forn++;
+  DB.fornecedores.push({ id, nome, documento: documento || null });
+  setMsg(document.getElementById("msgForn"), "Fornecedor salvo!", true);
+  document.getElementById("fForNome").value = ""; document.getElementById("fForDoc").value = "";
+  await finLoadForns();
+});
+
+document.getElementById('btnListForn')?.addEventListener('click', () => { finLoadForns(); });
+
+document.getElementById('btnAddTipo')?.addEventListener('click', async () => {
+  const nome = (document.getElementById("fTipoNome")?.value || '').trim();
+  if (!nome) { setMsg(document.getElementById("msgTipo"), "Informe o nome do tipo.", false); document.getElementById("fTipoNome")?.focus(); return; }
+  const id = DB.seq.tipo++;
+  DB.tipos.push({ id, nome });
+  setMsg(document.getElementById("msgTipo"), "Tipo salvo!", true);
+  document.getElementById("fTipoNome").value = "";
+  await finLoadTipos();
+});
+
+document.getElementById('btnListTipo')?.addEventListener('click', () => { finLoadTipos(); });
+
+document.getElementById('btnAddConta')?.addEventListener('click', async () => {
+  const nome = (document.getElementById("fContaNome")?.value || '').trim();
+  const tipo = (document.getElementById("fContaTipo")?.value || '').trim();
+  if (!nome || !tipo) { setMsg(document.getElementById("msgConta"), "Preencha nome e tipo.", false); document.getElementById("fContaNome")?.focus(); return; }
+  const id = DB.seq.conta++;
+  DB.contas.push({ id, nome, tipo });
+  setMsg(document.getElementById("msgConta"), "Conta salva!", true);
+  document.getElementById("fContaNome").value = ""; document.getElementById("fContaTipo").value = "caixa";
+  await finLoadContas();
+});
+
+document.getElementById('btnListConta')?.addEventListener('click', () => { finLoadContas(); });
+
+// ---------- Pagamentos – salvar / listar / relatório ----------
+document.getElementById("btnAddPgto")?.addEventListener("click", async ()=> {
+  const fornecedor_id = parseInt((document.getElementById("pForn")?.value||"0"),10);
+  const tipo_id       = parseInt((document.getElementById("pTipo")?.value||"0"),10);
+  const conta_id      = parseInt((document.getElementById("pConta")?.value||"0"),10);
+  const valor         = parseFloat((document.getElementById("pValor")?.value||"0"));
+  const dataBr        = (document.getElementById("pData")?.value||"").trim();
+  const dataIso       = brToIso(dataBr);
+  const observacao    = (document.getElementById("pObs")?.value||"").trim() || null;
+
+  if(!fornecedor_id || !tipo_id || !conta_id || !(valor>0)){
+    setMsg(document.getElementById("msgPgto"), "Preencha fornecedor, tipo, conta e valor > 0.", false);
+    return;
+  }
+
+  const id = DB.seq.pgto++;
+  const dataISO = dataIso ? new Date(`${dataIso}T00:00:00`).toISOString() : new Date().toISOString();
+  DB.pagamentos.push({ id, fornecedor_id, tipo_id, conta_id, valor:+valor, observacao, dataISO });
+
+  setMsg(document.getElementById("msgPgto"), "Pagamento salvo!", true);
+  document.getElementById("pValor").value = "";
+  document.getElementById("pData").value  = "";
+  document.getElementById("pObs").value   = "";
+
+  await finListPagamentos();
+  await finRelPagamentos();
+});
+
+document.getElementById("btnListPgto")?.addEventListener("click", finListPagamentos);
+async function finListPagamentos(){
+  const vi = brToIso((document.getElementById("rpIni")?.value||"").trim());
+  const vf = brToIso((document.getElementById("rpFim")?.value||"").trim());
+  const tb = document.querySelector("#tblPgto tbody");
+  if (!tb) return;
+
+  const data = (DB.pagamentos||[]).filter(p=>{
+    const d = new Date(p.dataISO);
+    const ini = vi ? new Date(vi+"T00:00:00") : null;
+    const fim = vf ? new Date(vf+"T23:59:59") : null;
+    return (!ini || d>=ini) && (!fim || d<=fim);
+  }).map(p=>({
+    id:p.id,
+    data:p.dataISO,
+    fornecedor_nome:(DB.fornecedores.find(f=>f.id===p.fornecedor_id)?.nome)||"",
+    tipo_nome:(DB.tipos.find(t=>t.id===p.tipo_id)?.nome)||"",
+    conta_nome:(DB.contas.find(c=>c.id===p.conta_id)?.nome)||"",
+    valor:p.valor,
+    observacao:p.observacao||""
+  }));
+
+  tb.innerHTML = data.length
+    ? data.map(p=>`<tr>
+        <td>${p.id}</td>
+        <td>${isoToBr((p.data||"").toString().slice(0,10))}</td>
+        <td>${p.fornecedor_nome||""}</td>
+        <td>${p.tipo_nome||""}</td>
+        <td>${p.conta_nome||""}</td>
+        <td>${brMoney.format(+p.valor||0)}</td>
+        <td>${p.observacao||""}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="7" class="muted">(vazio)</td></tr>`;
+}
+
+document.getElementById("btnRelFinanceiro")?.addEventListener("click", finRelPagamentos);
+async function finRelPagamentos(){
+  const vi = brToIso((document.getElementById("rpi")?.value || "").trim());
+  const vf = brToIso((document.getElementById("rpf")?.value || "").trim());
+  const tb = document.querySelector("#tblRelPag tbody");
+  if (!tb) return;
+
+  const ini = vi ? new Date(vi+"T00:00:00") : null;
+  const fim = vf ? new Date(vf+"T23:59:59") : null;
+
+  const data = (DB.pagamentos||[]).filter(p=>{
+    const d = new Date(p.dataISO);
+    return (!ini || d>=ini) && (!fim || d<=fim);
+  }).map(p=>({
+    id:p.id,
+    data:p.dataISO,
+    fornecedor:(DB.fornecedores.find(f=>f.id===p.fornecedor_id)?.nome)||"",
+    tipo:(DB.tipos.find(t=>t.id===p.tipo_id)?.nome)||"",
+    conta:(DB.contas.find(c=>c.id===p.conta_id)?.nome)||"",
+    valor:p.valor,
+    observacao:p.observacao||""
+  }));
+
+  tb.innerHTML = data.length
+    ? data.map(p=>`<tr>
+        <td>${p.id}</td>
+        <td>${isoToBr((p.data||"").toString().slice(0,10))}</td>
+        <td>${p.fornecedor||""}</td>
+        <td>${p.tipo||""}</td>
+        <td>${p.conta||""}</td>
+        <td>${brMoney.format(+p.valor||0)}</td>
+        <td>${p.observacao||""}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="7" class="muted">(vazio)</td></tr>`;
+}
+
+
+// (Opcional) popular selects ao carregar este bloco
+finPopulateSelectors?.();
+
+</script>
+
+<script>
+ //Navegação por abas (usa seu <nav> e as <section class="tab">)
+document.querySelectorAll('nav button[data-tab]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const t = btn.getAttribute('data-tab');
+    document.querySelectorAll('main .tab').forEach(sec=>sec.classList.add('hide'));
+    document.getElementById(t)?.classList.remove('hide');
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Deixa "Início" visível ao carregar
+  document.querySelector('nav button[data-tab="home"]')?.click();
+
+  // Preenche selects, listas e saldos já existentes no seu código
+  // (essas funções já estão definidas nos blocos anteriores)
+  try { refreshInsumoSelects?.(); } catch {}
+  try { listConversoes?.(); } catch {}
+  try { loadSaldos?.(); } catch {}
+  try { finPopulateSelectors?.(); } catch {}
+});
+</script>
