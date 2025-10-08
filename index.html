@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=980" />
+  <title>Funferp ERP - Demo</title>
+  <style>
+    /* Reset + fonte */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background:#f9fafb; color:#1f2937; line-height:1.55;
+      padding:24px;
+    }
+
+    /* Layout geral */
+    main{max-width:1100px;margin:0 auto}
+    header{max-width:1100px;margin:0 auto 18px}
+    header h1{font-size:28px;font-weight:700;margin-bottom:6px}
+    header .muted{color:#6b7280;font-size:14px}
+
+    /* Navegação (abas) */
+    nav{
+      display:flex; flex-wrap:wrap; gap:10px;
+      max-width:1100px; margin:14px auto 22px;
+    }
+    nav button{
+      border:0; border-radius:10px; padding:10px 14px;
+      background:#e5e7eb; color:#111827; font-weight:600;
+      box-shadow:0 1px 0 rgba(0,0,0,.04);
+      cursor:pointer; transition:transform .04s ease, background .15s ease;
+    }
+    nav button:hover{transform:translateY(-1px)}
+    nav button.active{background:#2563eb;color:#fff}
+
+    /* Submenu (subtelas inline) */
+    .subnav{display:flex; gap:8px; margin:10px 0 14px}
+    .subnav button{
+      background:#eef2f7; border-radius:8px; padding:6px 10px;
+      border:0; font-weight:600; cursor:pointer;
+    }
+    .subnav button.active{background:#2563eb;color:#fff}
+
+    /* Cartões */
+    .card{
+      background:#fff; border-radius:12px; padding:16px;
+      box-shadow:0 1px 3px rgba(0,0,0,.08);
+      margin-bottom:18px;
+    }
+    .card h3{margin-bottom:10px;color:#111827}
+
+    /* Tipografia de seções */
+    section.tab h2{margin:6px 0 12px;font-size:22px}
+    .muted{color:#9ca3af}
+    .hide{display:none}
+
+    /* Forms */
+    label{display:block;margin:8px 0 4px;font-weight:600;color:#374151}
+    input[type="text"], input[type="number"], input[type="date"], select, input[placeholder]{
+      width:100%; max-width:360px;
+      border:1px solid #d1d5db; border-radius:8px; padding:8px 10px;
+      background:#fff; color:#111827;
+    }
+    input::placeholder{color:#9ca3af}
+    input[type="checkbox"]{transform:scale(1.1);margin-right:6px}
+
+    /* Botões padrão */
+    button{
+      border:0; border-radius:8px; padding:8px 12px; font-weight:600;
+      background:#2563eb; color:#fff; cursor:pointer; margin-right:6px; margin-top:8px;
+    }
+    button.secondary{background:#6b7280}
+    button.warning{background:#f59e0b}
+    button:disabled{opacity:.6;cursor:not-allowed}
+
+    /* Tabelas */
+    table{width:100%; border-collapse:collapse; margin-top:10px}
+    thead{background:#f3f4f6}
+    th,td{padding:8px 10px; border:1px solid #e5e7eb; text-align:left; font-size:14px}
+    tbody tr:hover{background:#fafafa}
+
+    /* Mensagens */
+    .msg{margin-top:8px;font-size:14px}
+    .msg.ok{color:#059669}
+    .msg.err{color:#dc2626}
+
+    /* Footer */
+    footer{max-width:1100px;margin:26px auto 0;text-align:center;color:#6b7280;font-size:13px}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Funferp ERP - Modo Demo</h1>
+  <p class="muted">Este é um ambiente de demonstração. Os dados são temporários e serão apagados ao atualizar a página (F5).</p>
+</header>
+
+<nav>
+  <button data-tab="home" class="active">Início</button>
+  <button data-tab="cadastros">Cadastros</button>
+  <button data-tab="estoque">Estoque</button>
+  <button data-tab="financeiro">Financeiro</button>
+  <button data-tab="relatorios">Relatórios</button>
+  <button data-tab="vendas">Vendas</button>
+</nav>
+
+<main id="appArea">
+  <!-- Aba: Início -->
+  <section id="home" class="tab">
+    <h2>Bem-vindo(a) ao Demo!</h2>
+    <p>Neste modo, você pode testar cadastros, estoque, financeiro, vendas e relatórios. Os dados não são persistidos (memória local em JavaScript, apenas para demonstração).</p>
+    <ul style="margin-top:10px; padding-left:18px;">
+      <li>Cadastre insumos, produtos, fornecedores, tipos e contas</li>
+      <li>Faça entradas/ajustes de estoque e conversões</li>
+      <li>Registre pagamentos e vendas (com consumo por ficha técnica)</li>
+      <li>Gere e exporte relatórios (CSV em padrão BR)</li>
+    </ul>
+  </section>
+  <!-- Aba: Cadastros -->
+  <section id="cadastros" class="tab hide">
+    <h2>Cadastros</h2>
+
+    <!-- Submenu inline -->
+    <div class="subnav" data-subnav="cad">
+      <button data-subtab="cad-insumos" class="active">Insumos</button>
+      <button data-subtab="cad-produtos">Produtos</button>
+      <button data-subtab="cad-ficha">Ficha Técnica</button>
+    </div>
+
+    <!-- Subtela: Insumos -->
+    <div id="cad-insumos" class="subtab">
+      <div class="card">
+        <h3>Insumos</h3>
+        <label>Nome:
+          <input id="iNome" placeholder="Ex: Queijo Mussarela" />
+        </label>
+        <label>Unidade:
+          <select id="iUni">
+            <option value="">Selecione...</option>
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="un">un</option>
+            <option value="ml">ml</option>
+            <option value="l">l</option>
+          </select>
+        </label>
+        <label>
+          <input type="checkbox" id="iVend" /> Vendível
+        </label>
+
+        <button id="btnAddInsumo">Salvar</button>
+        <button id="btnListInsumo" class="secondary">Listar</button>
+        <div id="msgInsumo" class="msg"></div>
+
+        <table id="tblInsumos">
+          <thead>
+            <tr><th>ID</th><th>Nome</th><th>Unidade</th><th>Vendível</th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Subtela: Produtos (inicialmente oculta) -->
+    <div id="cad-produtos" class="subtab hide">
+      <div class="card">
+        <h3>Produtos</h3>
+        <label>Nome:
+          <input id="pNome" placeholder="Ex: X-Burger" />
+        </label>
+        <label>É preparado?
+          <select id="pPrep">
+            <option value="">Selecione...</option>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
+        </label>
+
+        <div id="inline-ficha" class="hide">
+          <p class="muted">Após salvar, defina a ficha técnica na aba ao lado.</p>
+        </div>
+
+        <button id="btnAddProd">Salvar</button>
+        <button id="btnListProd" class="secondary">Listar</button>
+        <div id="msgProd" class="msg"></div>
+
+        <table id="tblProdutos">
+          <thead>
+            <tr><th>ID</th><th>Nome</th><th>Preparado</th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="3" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Subtela: Ficha Técnica (inicialmente oculta) -->
+    <div id="cad-ficha" class="subtab hide">
+      <div class="card">
+        <h3>Ficha Técnica</h3>
+
+        <label>Produto:
+          <select id="fpProd"></select>
+        </label>
+        <button id="fpBtnVer">Ver Ficha</button>
+
+        <table id="fpTbl" style="margin-top:10px;">
+          <thead>
+            <tr><th>#</th><th>Insumo</th><th>Qtd</th><th>Unidade</th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+
+        <h4 style="margin-top:14px;">Adicionar Linha</h4>
+        <label>Insumo:
+          <select class="fpLinhaIns"></select>
+        </label>
+        <label>Qtd:
+          <input class="fpLinhaQtd" type="number" step="0.01" />
+        </label>
+        <label>Unidade:
+          <select class="fpLinhaUn">
+            <option value="">Selecione...</option>
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="un">un</option>
+            <option value="ml">ml</option>
+            <option value="l">l</option>
+          </select>
+        </label>
+        <button id="fpBtnAddLinha" class="secondary">+ Adicionar linha</button>
+
+        <table id="fpTblLinhas" style="margin-top:10px;">
+          <thead>
+            <tr><th>#</th><th>Insumo</th><th>Qtd</th><th>Un</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="5" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+
+        <button id="fpBtnSalvar">Salvar Ficha</button>
+        <div id="fpMsg" class="msg"></div>
+      </div>
+    </div>
+  </section>
+  <!-- Aba: Estoque -->
+  <section id="estoque" class="tab hide">
+    <h2>Estoque</h2>
+
+    <!-- Submenu inline -->
+    <div class="subnav" data-subnav="est">
+      <button data-subtab="est-entrada" class="active">Entrada</button>
+      <button data-subtab="est-ajuste">Ajuste</button>
+      <button data-subtab="est-conversoes">Conversões</button>
+      <button data-subtab="est-saldos">Saldos</button>
+    </div>
+
+    <!-- Subtela: Entrada -->
+    <div id="est-entrada" class="subtab">
+      <div class="card">
+        <h3>Registrar Entrada</h3>
+        <label>Insumo:
+          <select id="eIns"></select>
+        </label>
+        <label>Qtd:
+          <input id="eQtd" type="number" step="0.01" />
+        </label>
+        <label>Custo Total:
+          <input id="eCusto" type="number" step="0.01" />
+        </label>
+        <button id="btnEntrada">Registrar Entrada</button>
+        <div id="msgEnt" class="msg"></div>
+      </div>
+    </div>
+
+    <!-- Subtela: Ajuste -->
+    <div id="est-ajuste" class="subtab hide">
+      <div class="card">
+        <h3>Ajuste de Estoque</h3>
+        <label>Insumo:
+          <select id="aIns"></select>
+        </label>
+        <label>Qtd (ex: -1):
+          <input id="aQtd" type="number" step="0.01" />
+        </label>
+        <label>Motivo:
+          <input id="aMot" placeholder="Ex: quebra" />
+        </label>
+        <label>Custo Unitário (opcional):
+          <input id="aCusto" type="number" step="0.01" />
+        </label>
+        <button id="btnAjuste" class="warning">Aplicar Ajuste</button>
+        <div id="msgAj" class="msg"></div>
+      </div>
+    </div>
+
+    <!-- Subtela: Conversões -->
+    <div id="est-conversoes" class="subtab hide">
+      <div class="card">
+        <h3>Conversões</h3>
+        <label>Insumo:
+          <select id="convIns"></select>
+        </label>
+        <label>De:
+          <input id="convFrom" placeholder="Ex: kg" />
+        </label>
+        <label>Para:
+          <input id="convTo" placeholder="Ex: g" />
+        </label>
+        <label>Fator:
+          <input id="convFactor" type="number" step="0.0001" placeholder="Ex: 1000" />
+        </label>
+        <button id="btnConvAdd">Adicionar Conversão</button>
+        <button id="btnConvList" class="secondary">Listar</button>
+        <div id="msgConv" class="msg"></div>
+
+        <table id="tblConv">
+          <thead>
+            <tr><th>De</th><th>Para</th><th>Fator</th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="3" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Subtela: Saldos -->
+    <div id="est-saldos" class="subtab hide">
+      <div class="card">
+        <h3>Saldos</h3>
+        <button id="btnSaldos">Atualizar Saldos</button>
+        <table id="tblSaldos">
+          <thead>
+            <tr><th>Insumo</th><th>Unidade</th><th>Saldo</th><th>Custo Médio</th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Exportar Estoque CSV (BR)</h3>
+        <button id="btnEstoqueMediaCSV">Exportar</button>
+      </div>
+    </div>
+  </section>
+  <!-- Aba: Financeiro -->
+  <section id="financeiro" class="tab hide">
+    <h2>Financeiro</h2>
+
+    <!-- Submenu inline -->
+    <div class="subnav" data-subnav="fin">
+      <button data-subtab="fin-fornecedores" class="active">Fornecedores</button>
+      <button data-subtab="fin-tipos">Tipos de Despesa</button>
+      <button data-subtab="fin-contas">Contas</button>
+      <button data-subtab="fin-pagamentos">Pagamentos</button>
+    </div>
+
+    <!-- Fornecedores -->
+    <div id="fin-fornecedores" class="subtab">
+      <div class="card">
+        <h3>Fornecedores</h3>
+        <label>Nome:
+          <input id="fForNome" placeholder="Ex: Supermercado Central" />
+        </label>
+        <label>Documento:
+          <input id="fForDoc" placeholder="CNPJ/CPF" />
+        </label>
+        <button id="btnAddForn">Salvar</button>
+        <button id="btnListForn" class="secondary">Listar</button>
+        <div id="msgForn" class="msg"></div>
+
+        <table id="tblForns">
+          <thead>
+            <tr><th>ID</th><th>Nome</th><th>Documento</th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="3" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tipos de Despesa -->
+    <div id="fin-tipos" class="subtab hide">
+      <div class="card">
+        <h3>Tipos de Despesa</h3>
+        <label>Nome:
+          <input id="fTipoNome" placeholder="Ex: Energia elétrica" />
+        </label>
+        <button id="btnAddTipo">Salvar</button>
+        <button id="btnListTipo" class="secondary">Listar</button>
+        <div id="msgTipo" class="msg"></div>
+
+        <table id="tblTipos">
+          <thead>
+            <tr><th>ID</th><th>Nome</th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="2" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Contas -->
+    <div id="fin-contas" class="subtab hide">
+      <div class="card">
+        <h3>Contas</h3>
+        <label>Nome:
+          <input id="fContaNome" placeholder="Ex: Caixa Principal" />
+        </label>
+        <label>Tipo:
+          <select id="fContaTipo">
+            <option value="caixa">Caixa</option>
+            <option value="banco">Banco</option>
+            <option value="cartão">Cartão</option>
+          </select>
+        </label>
+        <button id="btnAddConta">Salvar</button>
+        <button id="btnListConta" class="secondary">Listar</button>
+        <div id="msgConta" class="msg"></div>
+
+        <table id="tblContas">
+          <thead>
+            <tr><th>ID</th><th>Nome</th><th>Tipo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="3" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagamentos -->
+    <div id="fin-pagamentos" class="subtab hide">
+      <div class="card">
+        <h3>Pagamentos</h3>
+        <label>Fornecedor:
+          <select id="pForn"></select>
+        </label>
+        <label>Tipo:
+          <select id="pTipo"></select>
+        </label>
+        <label>Conta:
+          <select id="pConta"></select>
+        </label>
+        <label>Valor:
+          <input id="pValor" type="number" step="0.01" />
+        </label>
+        <label>Data:
+          <input id="pData" placeholder="DD/MM/AAAA" />
+        </label>
+        <label>Observação:
+          <input id="pObs" />
+        </label>
+        <button id="btnAddPgto">Salvar</button>
+        <button id="btnListPgto" class="secondary">Listar</button>
+        <div id="msgPgto" class="msg"></div>
+
+        <table id="tblPgto">
+          <thead>
+            <tr>
+              <th>ID</th><th>Data</th><th>Fornecedor</th><th>Tipo</th>
+              <th>Conta</th><th>Valor</th><th>Obs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="7" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+
+        <button id="btnPagamentosCSV">Exportar CSV-BR</button>
+      </div>
+    </div>
+  </section>
+  <!-- Aba: Relatórios -->
+  <section id="relatorios" class="tab hide">
+    <h2>Relatórios</h2>
+
+    <!-- Submenu inline -->
+    <div class="subnav" data-subnav="rel">
+      <button data-subtab="rel-estoque" class="active">Estoque</button>
+      <button data-subtab="rel-vendas">Vendas</button>
+      <button data-subtab="rel-mov">Movimentações</button>
+    </div>
+
+    <!-- Relatório: Estoque -->
+    <div id="rel-estoque" class="subtab">
+      <div class="card">
+        <h3>Relatório de Estoque</h3>
+        <p class="muted">Mostra saldo e custo médio por insumo.</p>
+        <button id="btnRelEst">Gerar</button>
+        <button id="btnEstoqueMediaCSV" class="secondary">Exportar CSV-BR</button>
+
+        <table id="tblRelEst" style="margin-top:10px;">
+          <thead>
+            <tr>
+              <th>Insumo</th><th>Unidade</th><th>Saldo</th><th>Custo Médio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Relatório: Vendas -->
+    <div id="rel-vendas" class="subtab hide">
+      <div class="card">
+        <h3>Relatório de Vendas</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:16px;">
+          <label style="min-width:220px;">Data inicial:
+            <input id="rvIni" placeholder="DD/MM/AAAA" />
+          </label>
+          <label style="min-width:220px;">Data final:
+            <input id="rvFim" placeholder="DD/MM/AAAA" />
+          </label>
+        </div>
+        <button id="btnRelV">Gerar</button>
+        <button id="btnVendasCSVBR" class="secondary">Exportar CSV-BR</button>
+
+        <table id="tblVendas" style="margin-top:10px;">
+          <thead>
+            <tr>
+              <th>ID</th><th>Data</th><th>Produto</th><th>Preço</th>
+              <th>Qtd</th><th>Tipo</th><th>Comentário</th><th>Pgto</th>
+              <th>Cancelada</th><th>Consumo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="10" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Relatório: Movimentações -->
+    <div id="rel-mov" class="subtab hide">
+      <div class="card">
+        <h3>Relatório de Movimentações</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:16px;">
+          <label style="min-width:220px;">Data inicial:
+            <input id="rmi" placeholder="DD/MM/AAAA" />
+          </label>
+          <label style="min-width:220px;">Data final:
+            <input id="rmf" placeholder="DD/MM/AAAA" />
+          </label>
+        </div>
+        <button id="btnRelMov">Gerar</button>
+
+        <table id="tblRelMov" style="margin-top:10px;">
+          <thead>
+            <tr>
+              <th>ID</th><th>Data</th><th>Insumo</th><th>Qtd</th>
+              <th>Un</th><th>Custo</th><th>Origem</th><th>Tipo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="8" class="muted">(vazio)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+<script>
+/* ============================
+   PARTE 6/8 — Relatórios: Submenu + Wires
+   ============================ */
+
+/* --- Submenu inline: Relatórios (Estoque / Vendas / Movimentações) --- */
+(function setupRelSubmenu(){
+  const container = document.querySelector('.subnav[data-subnav="rel"]');
+  if(!container) return;
+
+  const btns = container.querySelectorAll('button[data-subtab]');
+  const tabs = [
+    document.getElementById('rel-estoque'),
+    document.getElementById('rel-vendas'),
+    document.getElementById('rel-mov')
+  ].filter(Boolean);
+
+  btns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const target = btn.getAttribute('data-subtab');
+      // alterna botão ativo
+      btns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      // alterna conteúdo
+      tabs.forEach(div=>{
+        if(!div) return;
+        div.classList.toggle('hide', div.id !== target);
+      });
+    });
+  });
+})();
+
+/* --- Helpers CSV: já existem (exportEstoqueBR, exportVendasBR).
+   Aqui só garantimos binds e o “Gerar” dos relatórios. --- */
+
+// Relatório: Estoque (usa a mesma fonte do Saldos)
+document.getElementById('btnRelEst')?.addEventListener('click', ()=>{
+  // Reutiliza loadSaldos, mas derruba no grid do relatório se existir
+  const tbody = document.querySelector('#tblRelEst tbody');
+  if (tbody) {
+    // Aproveitar a mesma saída do loadSaldos:
+    const data = (DB.insumos||[]).map(ins=>{
+      const st = DB.estoque[ins.id] || { saldo:0, custoMedio:0 };
+      return { insumo_nome:ins.nome, unidade:ins.unidade, saldo:+st.saldo, custo_medio:+st.custoMedio };
+    });
+
+    tbody.innerHTML = data.length
+      ? data.map(x=>`
+        <tr>
+          <td>${x.insumo_nome}</td>
+          <td>${x.unidade}</td>
+          <td>${new Intl.NumberFormat("pt-BR",{minimumFractionDigits:3,maximumFractionDigits:3}).format(+x.saldo)}</td>
+          <td>${new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(+x.custo_medio||0)}</td>
+        </tr>
+      `).join("")
+      : `<tr><td colspan="4" class="muted">(vazio)</td></tr>`;
+  }
+});
+
+// Export Estoque CSV
+document.getElementById('btnEstoqueMediaCSV')?.addEventListener('click', exportEstoqueBR);
+
+// Relatório: Vendas
+document.getElementById('btnRelV')?.addEventListener('click', ()=>{
+  const vi = (document.getElementById('rvIni')?.value||"").trim();
+  const vf = (document.getElementById('rvFim')?.value||"").trim();
+  const viIso = brToIso(vi);
+  const vfIso = brToIso(vf);
+
+  const rows = (function(){
+    const ini = viIso ? new Date(viIso+"T00:00:00") : null;
+    const fim = vfIso ? new Date(vfIso+"T23:59:59") : null;
+    const out = [];
+    for (const v of (DB.vendas||[])) {
+      const d = new Date(v.data);
+      if (ini && d < ini) continue;
+      if (fim && d > fim) continue;
+
+      if (!v.consumos || !v.consumos.length) {
+        out.push({
+          venda_id:v.venda_id, data:v.data, produto_nome:v.produto_nome,
+          preco_venda:v.preco_venda, quantidade:v.quantidade, tipo:v.tipo,
+          comentario:v.comentario, forma_pagamento:v.forma_pagamento, cancelada:v.cancelada,
+          insumo_nome:"", consumo_base:"", unidade_base:""
+        });
+      } else {
+        for (const c of v.consumos) {
+          out.push({
+            venda_id:v.venda_id, data:v.data, produto_nome:v.produto_nome,
+            preco_venda:v.preco_venda, quantidade:v.quantidade, tipo:v.tipo,
+            comentario:v.comentario, forma_pagamento:v.forma_pagamento, cancelada:v.cancelada,
+            insumo_nome:c.insumo_nome, consumo_base:c.consumo_base, unidade_base:c.unidade_base
+          });
+        }
+      }
+    }
+    return out;
+  })();
+
+  const tb = document.querySelector('#tblVendas tbody');
+  if (!tb) return;
+
+  tb.innerHTML = rows.length
+    ? rows.map(v=>`
+      <tr>
+        <td>${v.venda_id}</td>
+        <td>${isoToBr((v.data||"").toString().slice(0,10))}</td>
+        <td>${v.produto_nome||""}</td>
+        <td>${new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(+v.preco_venda||0)}</td>
+        <td>${v.quantidade ?? ""}</td>
+        <td>${v.tipo||""}</td>
+        <td>${v.comentario||""}</td>
+        <td>${v.forma_pagamento||""}</td>
+        <td>${v.cancelada ? "SIM":"NÃO"}</td>
+        <td>${[v.insumo_nome, v.consumo_base, v.unidade_base].filter(Boolean).join(" ")}</td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="10" class="muted">(vazio)</td></tr>`;
+});
+
+// Export Vendas CSV
+document.getElementById('btnVendasCSVBR')?.addEventListener('click', exportVendasBR);
+
+/* Relatório: Movimentações (usa DB.movs) */
+function relMovLocal({ start, end } = {}){
+  const ini = start ? new Date(start+"T00:00:00") : null;
+  const fim = end   ? new Date(end+"T23:59:59")  : null;
+  return (DB.movs||[]).filter(m=>{
+    const d = new Date(m.dataISO);
+    return (!ini || d>=ini) && (!fim || d<=fim);
+  });
+}
+
+document.getElementById('btnRelMov')?.addEventListener('click', ()=>{
+  const iBr = (document.getElementById('rmi')?.value||"").trim();
+  const fBr = (document.getElementById('rmf')?.value||"").trim();
+  const iIso = brToIso(iBr);
+  const fIso = brToIso(fBr);
+
+  const rows = relMovLocal({ start: iIso || undefined, end: fIso || undefined });
+  const tb = document.querySelector('#tblRelMov tbody');
+  if(!tb) return;
+
+  tb.innerHTML = rows.length
+    ? rows.map(m=>`
+      <tr>
+        <td>${m.id}</td>
+        <td>${isoToBr((m.dataISO||"").toString().slice(0,10))}</td>
+        <td>${m.insumo_nome||""}</td>
+        <td>${m.quantidade ?? ""}</td>
+        <td>${m.unidade||""}</td>
+        <td>${new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(+m.custo_total||0)}</td>
+        <td>${m.origem||""}</td>
+        <td>${m.tipo||""}</td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="8" class="muted">(vazio)</td></tr>`;
+});
+</script>
+<script>
+/* ============================
+   PARTE 7/8 — Cadastros + Estoque
+   ============================ */
+
+/* ---------- Renders: Cadastros ---------- */
+function renderInsumos(){
+  const tb = document.querySelector("#tblInsumos tbody");
+  if(!tb) return;
+  const data = DB.insumos || [];
+  tb.innerHTML = data.length
+    ? data.map(i=>`<tr>
+        <td>${i.id}</td>
+        <td>${i.nome}</td>
+        <td>${i.unidade}</td>
+        <td>${i.vendivel ? "Sim" : "Não"}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="4" class="muted">(vazio)</td></tr>`;
+}
+
+function renderProdutos(){
+  const tb = document.querySelector("#tblProdutos tbody");
+  if(!tb) return;
+  const data = DB.produtos || [];
+  tb.innerHTML = data.length
+    ? data.map(p=>`<tr>
+        <td>${p.id}</td>
+        <td>${p.nome}</td>
+        <td>${p.preparado ? "Sim" : "Não"}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="3" class="muted">(vazio)</td></tr>`;
+
+  // Atualiza select de produto na Ficha Técnica
+  const sel = document.getElementById("fpProd");
+  if(sel){
+    sel.innerHTML = `<option value="">Selecione…</option>` +
+      data.map(p=>`<option value="${p.id}">${p.id} - ${p.nome}</option>`).join("");
+  }
+}
+
+/* ---------- Selects de Insumos (vários lugares) ---------- */
+function refreshInsumoSelects(){
+  const data = DB.insumos || [];
+  const opts = [`<option value="">Selecione…</option>`]
+    .concat(data.map(i => `<option value="${i.id}">${i.id} - ${i.nome} (${i.unidade})</option>`))
+    .join("");
+
+  ["convIns","eIns","aIns"].forEach(id=>{
+    const sel = document.getElementById(id);
+    if(sel) sel.innerHTML = opts;
+  });
+
+  document.querySelectorAll(".fpLinhaIns").forEach(sel => sel.innerHTML = opts);
+}
+
+/* ---------- Ficha Técnica ---------- */
+let _fichaTemp = []; // linhas temporárias antes de salvar
+
+function renderFichaTabela(prodId){
+  const tb = document.querySelector("#fpTbl tbody");
+  if(!tb) return;
+  const list = DB.ficha[prodId] || [];
+  tb.innerHTML = list.length
+    ? list.map((l,ix)=>`<tr>
+        <td>${ix+1}</td>
+        <td>${(findInsumo(l.insumo_id)?.nome) || ""}</td>
+        <td>${l.quantidade}</td>
+        <td>${l.unidade}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="4" class="muted">(vazio)</td></tr>`;
+}
+
+function renderFichaLinhasTemp(){
+  const tb = document.querySelector("#fpTblLinhas tbody");
+  if(!tb) return;
+  tb.innerHTML = _fichaTemp.length
+    ? _fichaTemp.map((l,ix)=>`
+      <tr>
+        <td>${ix+1}</td>
+        <td>${(findInsumo(+l.insumo_id)?.nome)||""}</td>
+        <td>${l.quantidade}</td>
+        <td>${l.unidade}</td>
+        <td><button class="secondary" data-remove-line="${ix}">Remover</button></td>
+      </tr>`).join("")
+    : `<tr><td colspan="5" class="muted">(vazio)</td></tr>`;
+
+  // Remover linha temporária
+  document.querySelectorAll('[data-remove-line]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const ix = +btn.getAttribute('data-remove-line');
+      _fichaTemp.splice(ix,1);
+      renderFichaLinhasTemp();
+    });
+  });
+}
+
+/* ---------- Binds: Cadastros ---------- */
+// Insumos
+document.getElementById("btnAddInsumo")?.addEventListener("click", ()=>{
+  const nome = document.getElementById("iNome")?.value.trim();
+  const unidade = document.getElementById("iUni")?.value.trim();
+  const vend = document.getElementById("iVend")?.checked || false;
+  const msg = document.getElementById("msgInsumo");
+  if(!nome || !unidade){ setMsg(msg,"Preencha nome e unidade.",false); return; }
+  addInsumo(nome, unidade, vend);
+  setMsg(msg,"Insumo salvo!",true);
+  document.getElementById("iNome").value="";
+  document.getElementById("iUni").value="";
+  document.getElementById("iVend").checked=false;
+  renderInsumos();
+  refreshInsumoSelects();
+});
+document.getElementById("btnListInsumo")?.addEventListener("click", renderInsumos);
+
+// Produtos
+document.getElementById("btnAddProd")?.addEventListener("click", ()=>{
+  const nome = document.getElementById("pNome")?.value.trim();
+  const prepVal = document.getElementById("pPrep")?.value;
+  const msg = document.getElementById("msgProd");
+  if(!nome || (prepVal!=="true" && prepVal!=="false")){
+    setMsg(msg,"Preencha nome e se é preparado.",false); return;
+  }
+  addProduto(nome, prepVal==="true");
+  setMsg(msg,"Produto salvo!",true);
+  document.getElementById("pNome").value="";
+  document.getElementById("pPrep").value="";
+  renderProdutos();
+});
+document.getElementById("btnListProd")?.addEventListener("click", renderProdutos);
+
+// Ficha técnica
+document.getElementById("fpBtnVer")?.addEventListener("click", ()=>{
+  const pid = parseInt(document.getElementById("fpProd")?.value||"0",10);
+  if(!pid){ setMsg(document.getElementById("fpMsg"),"Selecione um produto.",false); return; }
+  renderFichaTabela(pid);
+});
+
+document.getElementById("fpBtnAddLinha")?.addEventListener("click", ()=>{
+  const $ins = document.querySelector(".fpLinhaIns"),
+        $q   = document.querySelector(".fpLinhaQtd"),
+        $u   = document.querySelector(".fpLinhaUn");
+  const insumo_id = parseInt(($ins?.value||"0"),10);
+  const quantidade = parseFloat(($q?.value||"0"));
+  const unidade = ($u?.value||"").trim();
+  if(!insumo_id || !(quantidade>0) || !unidade){
+    setMsg(document.getElementById("fpMsg"),"Preencha insumo, quantidade > 0 e unidade.",false); return;
+  }
+  _fichaTemp.push({ insumo_id, quantidade:+quantidade, unidade });
+  renderFichaLinhasTemp();
+  if($q) $q.value=""; if($u) $u.value="";
+});
+
+document.getElementById("fpBtnSalvar")?.addEventListener("click", ()=>{
+  const pid = parseInt(document.getElementById("fpProd")?.value||"0",10);
+  if(!pid){ setMsg(document.getElementById("fpMsg"),"Selecione um produto.",false); return; }
+  DB.ficha[pid] = (_fichaTemp||[]).map(l=>({...l, insumo_id:+l.insumo_id, quantidade:+l.quantidade}));
+  _fichaTemp = [];
+  renderFichaLinhasTemp();
+  renderFichaTabela(pid);
+  setMsg(document.getElementById("fpMsg"),"Ficha técnica salva!",true);
+});
+
+/* ---------- Estoque ---------- */
+function saldosMedia(){
+  return (DB.insumos||[]).map(ins => {
+    const st = DB.estoque[ins.id] || { saldo:0, custoMedio:0 };
+    return { insumo_id:ins.id, insumo_nome:ins.nome, unidade:ins.unidade, saldo:+st.saldo, custo_medio:+st.custoMedio };
+  });
+}
+
+function loadSaldos(){
+  const data = saldosMedia();
+  const tbody = document.querySelector("#tblSaldos tbody") || document.querySelector("#tblRelEst tbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = data.length
+    ? data.map(x=>`
+      <tr>
+        <td>${x.insumo_nome}</td>
+        <td>${x.unidade}</td>
+        <td>${new Intl.NumberFormat("pt-BR",{minimumFractionDigits:3,maximumFractionDigits:3}).format(+x.saldo)}</td>
+        <td>${new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(+(x.custo_medio||0))}</td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="4" class="muted">(vazio)</td></tr>`;
+}
+
+function entradaMedia({ insumo_id, quantidade, custo_total }){
+  const e = ensureEstoque(insumo_id);
+  const qtd = +quantidade;
+  const somaAnt = e.saldo * e.custoMedio;
+  e.saldo += qtd;
+  e.custoMedio = e.saldo > 0 ? (somaAnt + (+custo_total)) / e.saldo : 0;
+
+  const ins = findInsumo(insumo_id);
+  addMov({
+    dataISO: new Date().toISOString(),
+    insumo_id,
+    insumo_nome: ins?.nome || "",
+    quantidade: +qtd,
+    unidade: ins?.unidade || "",
+    custo_total: +custo_total,
+    origem: "entrada",
+    tipo: "entrada-media"
+  });
+}
+
+function ajusteMedia({ insumo_id, quantidade, motivo, custo_unitario }){
+  const e = ensureEstoque(insumo_id);
+  const qtd = +quantidade;
+  if (typeof custo_unitario === "number" && !Number.isNaN(custo_unitario)) {
+    e.custoMedio = +custo_unitario;
+  }
+  e.saldo += qtd;
+
+  const ins = findInsumo(insumo_id);
+  addMov({
+    dataISO: new Date().toISOString(),
+    insumo_id,
+    insumo_nome: ins?.nome || "",
+    quantidade: +qtd,
+    unidade: ins?.unidade || "",
+    custo_total: 0,
+    origem: motivo || "ajuste",
+    tipo: "ajuste-media"
+  });
+}
+
+/* ---------- Binds: Estoque ---------- */
+document.getElementById("btnEntrada")?.addEventListener("click", ()=>{
+  const insumo_id = parseInt(document.getElementById("eIns")?.value||"0",10);
+  const quantidade = parseFloat(document.getElementById("eQtd")?.value||"0");
+  const custo_total = parseFloat(document.getElementById("eCusto")?.value||"0");
+  if(!insumo_id || !(quantidade>0) || !(custo_total>=0)){
+    setMsg(document.getElementById("msgEnt"),"Preencha insumo, quantidade > 0 e custo.",false); return;
+  }
+  entradaMedia({ insumo_id, quantidade, custo_total });
+  setMsg(document.getElementById("msgEnt"),"Entrada registrada!",true);
+  document.getElementById("eQtd").value=""; document.getElementById("eCusto").value="";
+  loadSaldos();
+});
+
+document.getElementById("btnAjuste")?.addEventListener("click", ()=>{
+  const insumo_id = parseInt(document.getElementById("aIns")?.value||"0",10);
+  const quantidade = parseFloat(document.getElementById("aQtd")?.value||"0");
+  const motivo = (document.getElementById("aMot")?.value||"").trim();
+  const custo_unitario = parseFloat(document.getElementById("aCusto")?.value||"");
+  if(!insumo_id || !quantidade){
+    setMsg(document.getElementById("msgAj"),"Preencha insumo e quantidade (pode ser negativa).",false); return;
+  }
+  ajusteMedia({ insumo_id, quantidade, motivo, custo_unitario: Number.isNaN(custo_unitario)?undefined:custo_unitario });
+  setMsg(document.getElementById("msgAj"),"Ajuste aplicado!",true);
+  document.getElementById("aQtd").value=""; document.getElementById("aMot").value=""; document.getElementById("aCusto").value="";
+  loadSaldos();
+});
+
+// Conversões
+function listConversoes(){
+  const insumo_id = parseInt(document.getElementById("convIns")?.value || "0", 10);
+  const tbody = document.querySelector("#tblConv tbody");
+  if (!tbody) return;
+
+  if (!insumo_id) {
+    tbody.innerHTML = `<tr><td colspan="3" class="muted">Selecione um insumo.</td></tr>`;
+    return;
+  }
+  const arr = (DB._convs[insumo_id] || []);
+  tbody.innerHTML = arr.length
+    ? arr.map(c => `<tr><td>${c.de_unidade}</td><td>${c.para_unidade}</td><td>${brQty3.format(+c.fator)}</td></tr>`).join("")
+    : `<tr><td colspan="3" class="muted">(vazio)</td></tr>`;
+}
+
+function saveConversao(){
+  const insumo_id = parseInt(document.getElementById("convIns")?.value || "0", 10);
+  const de_unidade = (document.getElementById("convFrom")?.value || "").trim();
+  const para_unidade = (document.getElementById("convTo")?.value || "").trim();
+  const fator = parseFloat(document.getElementById("convFactor")?.value || "0");
+  const msg = document.getElementById("msgConv");
+
+  if (!insumo_id || !de_unidade || !para_unidade || !(fator > 0)) {
+    setMsg(msg, "Preencha insumo, de, para e fator > 0.", false);
+    return;
+  }
+
+  const arr = (DB._convs[insumo_id] ||= []);
+  const ix = arr.findIndex(c => c.de_unidade === de_unidade && c.para_unidade === para_unidade);
+  if (ix >= 0) arr[ix].fator = +fator; else arr.push({ de_unidade, para_unidade, fator:+fator });
+
+  setMsg(msg, "Conversão salva!", true);
+  const ff = document.getElementById("convFactor"); if (ff) ff.value = "";
+  listConversoes();
+}
+
+document.getElementById("btnConvAdd")?.addEventListener("click", saveConversao);
+document.getElementById("btnConvList")?.addEventListener("click", listConversoes);
+
+// Saldos (relatório rápido)
+document.getElementById("btnSaldos")?.addEventListener("click", loadSaldos);
+</script>
+<script>
+/* ============================
+   PARTE 8/8 — Boot + Navegação Inline + Final
+   ============================ */
+
+/* ---------- Navegação principal ---------- */
+document.querySelectorAll('nav button[data-tab]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const t = btn.getAttribute('data-tab');
+    document.querySelectorAll('main .tab').forEach(sec=>sec.classList.add('hide'));
+    document.getElementById(t)?.classList.remove('hide');
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* ---------- Subnavegação inline ---------- */
+// Estrutura inline: quando clicar numa aba principal, exibe subtítulo dinâmico
+function showInlineNav(titulo, subitens){
+  const navArea = document.querySelector("#inline-nav");
+  if(!navArea) return;
+  if(!subitens || !subitens.length){ navArea.innerHTML = ""; return; }
+
+  navArea.innerHTML = `
+    <div style="margin-bottom:12px; display:flex; flex-wrap:wrap; gap:8px;">
+      <strong style="margin-right:6px;">${titulo}:</strong>
+      ${subitens.map(s=>`<button class="secondary mini" data-inline="${s.id}">${s.label}</button>`).join("")}
+    </div>
+  `;
+}
+
+// Reaproveita área
+const inlineHolder = document.createElement("div");
+inlineHolder.id = "inline-nav";
+document.querySelector("header").insertAdjacentElement("afterend", inlineHolder);
+
+// Eventos inline (estoque, cadastros, financeiro, relatórios)
+const inlineConfig = {
+  estoque: [
+    { id:"estoque-entrada", label:"Registrar Entrada" },
+    { id:"estoque-ajuste", label:"Ajustar Estoque" },
+    { id:"estoque-conversao", label:"Conversões" },
+    { id:"estoque-saldos", label:"Saldos" }
+  ],
+  cadastros: [
+    { id:"cadastro-insumos", label:"Insumos" },
+    { id:"cadastro-produtos", label:"Produtos" },
+    { id:"cadastro-ficha", label:"Ficha Técnica" }
+  ],
+  financeiro: [
+    { id:"fin-forn", label:"Fornecedores" },
+    { id:"fin-tipo", label:"Tipos de Despesa" },
+    { id:"fin-conta", label:"Contas" },
+    { id:"fin-pgto", label:"Pagamentos" }
+  ],
+  relatorios: [
+    { id:"rel-estoque", label:"Estoque" },
+    { id:"rel-vendas", label:"Vendas" },
+    { id:"rel-mov", label:"Movimentações" }
+  ]
+};
+
+// Listener: cria inline nav ao trocar aba
+document.querySelectorAll('nav button[data-tab]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const tab = btn.getAttribute('data-tab');
+    const config = inlineConfig[tab];
+    if(config) showInlineNav(tab.charAt(0).toUpperCase()+tab.slice(1), config);
+    else showInlineNav("", []);
+  });
+});
+
+// Evento genérico inline (apenas scroll para seção correspondente)
+document.addEventListener("click", e=>{
+  const t = e.target;
+  if(t.matches("[data-inline]")){
+    e.preventDefault();
+    const id = t.getAttribute("data-inline");
+    const card = document.querySelector(`.card h3:contains('${t.textContent}')`);
+    if(card){
+      card.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+  }
+});
+
+/* ---------- Boot do App ---------- */
+document.addEventListener("DOMContentLoaded", ()=>{
+  document.querySelector('nav button[data-tab="home"]')?.click(); // padrão
+
+  // inicia listas/renderizações
+  renderInsumos();
+  renderProdutos();
+  refreshInsumoSelects();
+  loadSaldos();
+  finPopulateSelectors?.();
+
+  // Dados seed exemplo (modo demo)
+  addInsumo("Queijo Mussarela","kg",false);
+  addInsumo("Refrigerante Lata","un",true);
+  addProduto("X-Burger",true);
+});
+</script>
